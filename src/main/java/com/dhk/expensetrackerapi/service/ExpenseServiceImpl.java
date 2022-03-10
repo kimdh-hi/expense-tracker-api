@@ -6,11 +6,14 @@ import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.ExpenseDtoAssembler;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -20,8 +23,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     @Override
-    public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+    public Page<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
+        return expenseRepository.findAllExpense(pageable);
     }
 
     @Override

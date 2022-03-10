@@ -3,15 +3,16 @@ package com.dhk.expensetrackerapi.controller;
 import com.dhk.expensetrackerapi.controller.dto.ExpenseAssembler;
 import com.dhk.expensetrackerapi.controller.dto.request.ExpenseRequest;
 import com.dhk.expensetrackerapi.controller.dto.response.ExpenseResponse;
-import com.dhk.expensetrackerapi.entity.Expense;
 import com.dhk.expensetrackerapi.service.ExpenseService;
 import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.net.URI;
 
 @RequestMapping(value = "/expenses")
 @RequiredArgsConstructor
@@ -19,10 +20,11 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private static final String REDIRECT_URL = "/api/v1/expenses/";
 
     @GetMapping
-    public List<Expense> getAllExpenses() {
-        return expenseService.getAllExpenses();
+    public Page<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
+        return expenseService.getAllExpenses(pageable);
     }
 
     @GetMapping("/{expenseId}")
@@ -36,7 +38,8 @@ public class ExpenseController {
     public ResponseEntity<Long> saveExpense(@RequestBody ExpenseRequest request) {
         ExpenseRequestDto expenseRequestDto = ExpenseAssembler.toExpenseRequestDto(request);
         Long id = expenseService.saveExpense(expenseRequestDto);
-        return ResponseEntity.ok(id);
+
+        return ResponseEntity.created(URI.create(REDIRECT_URL + id)).build();
     }
 
     @DeleteMapping
