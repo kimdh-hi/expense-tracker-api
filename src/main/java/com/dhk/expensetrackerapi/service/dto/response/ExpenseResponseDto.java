@@ -1,6 +1,7 @@
 package com.dhk.expensetrackerapi.service.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ExpenseResponseDto {
 
@@ -10,17 +11,21 @@ public class ExpenseResponseDto {
     private Integer amount;
     private String category;
     private LocalDate date;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ExpenseResponseDto() {
     }
 
-    public ExpenseResponseDto(Long id, String name, String description, Integer amount, String category, LocalDate date) {
+    public ExpenseResponseDto(Long id, String name, String description, Integer amount, String category, LocalDate date, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
@@ -69,5 +74,21 @@ public class ExpenseResponseDto {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

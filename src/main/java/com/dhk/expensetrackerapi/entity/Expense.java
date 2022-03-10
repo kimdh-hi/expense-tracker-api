@@ -3,19 +3,15 @@ package com.dhk.expensetrackerapi.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Objects;
 
-@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tbl_expenses")
 @Entity
-public class Expense {
+public class Expense extends Timestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -26,7 +26,9 @@ public class ExpenseAssembler {
                 dto.getDescription(),
                 dto.getAmount(),
                 dto.getCategory(),
-                dto.getDate()
+                dto.getDate(),
+                dto.getCreatedAt(),
+                dto.getUpdatedAt()
         );
     }
 }

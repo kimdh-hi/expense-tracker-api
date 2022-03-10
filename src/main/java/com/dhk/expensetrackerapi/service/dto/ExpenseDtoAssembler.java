@@ -35,7 +35,9 @@ public class ExpenseDtoAssembler {
                 expense.getDescription(),
                 expense.getAmount(),
                 expense.getCategory(),
-                expense.getDate()
+                expense.getDate(),
+                expense.getCreatedAt(),
+                expense.getUpdatedAt()
         );
     }
 }
