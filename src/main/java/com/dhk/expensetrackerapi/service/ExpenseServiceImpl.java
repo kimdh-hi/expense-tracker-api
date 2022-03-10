@@ -1,9 +1,10 @@
 package com.dhk.expensetrackerapi.service;
 
 import com.dhk.expensetrackerapi.entity.Expense;
+import com.dhk.expensetrackerapi.exception.exceptions.ResourceNotFoundException;
 import com.dhk.expensetrackerapi.repository.ExpenseRepository;
-import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.ExpenseDtoAssembler;
+import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,9 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseResponseDto getExpense(Long id) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new IllegalArgumentException("Expense is not found. id=" + id);
+                    throw new ResourceNotFoundException("Expense is not found. id=" + id);
                 }
         );
 
@@ -58,7 +57,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new IllegalArgumentException("Expense is not found. id=" + id);
+                    throw new ResourceNotFoundException("Expense is not found. id=" + id);
                 });
 
         Expense newExpense = new Expense(
