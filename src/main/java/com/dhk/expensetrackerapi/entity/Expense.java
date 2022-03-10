@@ -3,10 +3,14 @@ package com.dhk.expensetrackerapi.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tbl_expenses")
@@ -38,5 +42,13 @@ public class Expense {
         this.amount = amount;
         this.category = category;
         this.date = date;
+    }
+
+    public void update(Expense newExpense) {
+        this.name = newExpense.getName();;
+        this.description = newExpense.getDescription();
+        this.amount = newExpense.getAmount();
+        this.category = newExpense.getCategory();;
+        this.date = newExpense.getDate();
     }
 }

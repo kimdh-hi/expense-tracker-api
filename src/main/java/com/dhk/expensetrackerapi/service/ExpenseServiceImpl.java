@@ -2,13 +2,15 @@ package com.dhk.expensetrackerapi.service;
 
 import com.dhk.expensetrackerapi.entity.Expense;
 import com.dhk.expensetrackerapi.repository.ExpenseRepository;
-import com.dhk.expensetrackerapi.service.dto.ExpenseRequestDto;
-import com.dhk.expensetrackerapi.service.dto.ExpenseRequestDtoAssembler;
+import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
+import com.dhk.expensetrackerapi.service.dto.ExpenseDtoAssembler;
+import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -23,16 +25,20 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense getExpense(Long id) {
-        return expenseRepository.findById(id).orElseThrow(
-                () -> {throw new IllegalArgumentException("Expense is not found. id=" + id);}
+    public ExpenseResponseDto getExpense(Long id) {
+        Expense expense = expenseRepository.findById(id).orElseThrow(
+                () -> {
+                    throw new IllegalArgumentException("Expense is not found. id=" + id);
+                }
         );
+
+        return ExpenseDtoAssembler.toExpenseResponseDto(expense);
     }
 
     @Transactional
     @Override
     public Long saveExpense(ExpenseRequestDto expenseRequestDto) {
-        Expense expense = ExpenseRequestDtoAssembler.toExpenseEntity(expenseRequestDto);
+        Expense expense = ExpenseDtoAssembler.toExpenseEntity(expenseRequestDto);
         Expense savedExpense = expenseRepository.save(expense);
 
         return savedExpense.getId();
@@ -43,4 +49,25 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void deleteExpense(Long id) {
         expenseRepository.deleteById(id);
     }
+
+    @Transactional
+    @Override
+    public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto) {
+        Expense expense = expenseRepository.findById(id).orElseThrow(
+                () -> {
+                    throw new IllegalArgumentException("Expense is not found. id=" + id);
+                });
+
+        Expense newExpense = new Expense(
+                Objects.isNull(expenseRequestDto.getName()) ? expense.getName() : expenseRequestDto.getName(),
+                Objects.isNull(expenseRequestDto.getDescription()) ? expense.getDescription() : expenseRequestDto.getDescription(),
+                Objects.isNull(expenseRequestDto.getAmount()) ? expense.getAmount() : expenseRequestDto.getAmount(),
+                Objects.isNull(expenseRequestDto.getCategory()) ? expense.getCategory() : expenseRequestDto.getCategory(),
+                Objects.isNull(expenseRequestDto.getDate()) ? expense.getDate() : expenseRequestDto.getDate()
+        );
+
+        expense.update(newExpense);
+    }
+
+
 }

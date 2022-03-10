@@ -1,23 +1,34 @@
-package com.dhk.expensetrackerapi.service.dto;
-
-import com.dhk.expensetrackerapi.entity.Expense;
+package com.dhk.expensetrackerapi.controller.dto.response;
 
 import java.time.LocalDate;
 
-public class ExpenseRequestDto {
+public class ExpenseResponse {
 
+    private Long id;
     private String name;
     private String description;
     private Integer amount;
     private String category;
     private LocalDate date;
 
-    public ExpenseRequestDto(String name, String description, Integer amount, String category, LocalDate date) {
+    public ExpenseResponse() {
+    }
+
+    public ExpenseResponse(Long id, String name, String description, Integer amount, String category, LocalDate date) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -58,16 +69,5 @@ public class ExpenseRequestDto {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    @Override
-    public String toString() {
-        return "SaveExpenseRequest{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", amount=" + amount +
-                ", category='" + category + '\'' +
-                ", date=" + date +
-                '}';
     }
 }

@@ -1,10 +1,12 @@
 package com.dhk.expensetrackerapi.service.dto;
 
 import com.dhk.expensetrackerapi.entity.Expense;
+import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
+import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 
-public class ExpenseRequestDtoAssembler {
+public class ExpenseDtoAssembler {
 
-    private ExpenseRequestDtoAssembler() {}
+    private ExpenseDtoAssembler() {}
 
     public static Expense toExpenseEntity(ExpenseRequestDto dto) {
         return new Expense(
@@ -18,6 +20,17 @@ public class ExpenseRequestDtoAssembler {
 
     public static ExpenseRequestDto toExpenseRequestDto(Expense expense) {
         return new ExpenseRequestDto(
+                expense.getName(),
+                expense.getDescription(),
+                expense.getAmount(),
+                expense.getCategory(),
+                expense.getDate()
+        );
+    }
+
+    public static ExpenseResponseDto toExpenseResponseDto(Expense expense) {
+        return new ExpenseResponseDto(
+                expense.getId(),
                 expense.getName(),
                 expense.getDescription(),
                 expense.getAmount(),
