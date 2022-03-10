@@ -16,32 +16,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorObject> handleExpenseNotFountException(ResourceNotFoundException ex, WebRequest request) {
-
-        ErrorObject errorObject = new ErrorObject();
-        errorObject.setMessage(ex.getMessage());
-        errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
-        errorObject.setTimestamp(LocalDateTime.now());
+        ErrorObject errorObject = generateErrorObject(ex, HttpStatus.NOT_FOUND.value());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
-        ErrorObject errorObject = new ErrorObject();
-        errorObject.setMessage(ex.getMessage());
-        errorObject.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        errorObject.setTimestamp(LocalDateTime.now());
+        ErrorObject errorObject = generateErrorObject(ex, HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorObject> handleInternalServerError(Exception ex) {
-        ErrorObject errorObject = new ErrorObject();
-        errorObject.setMessage(ex.getMessage());
-        errorObject.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorObject.setTimestamp(LocalDateTime.now());
+        ErrorObject errorObject = generateErrorObject(ex, HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ErrorObject generateErrorObject(Exception ex, int statusCode) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setMessage(ex.getMessage());
+        errorObject.setStatusCode(statusCode);
+        errorObject.setTimestamp(LocalDateTime.now());
+
+        return errorObject;
     }
 }
