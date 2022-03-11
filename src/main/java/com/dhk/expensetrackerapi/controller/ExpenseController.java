@@ -6,6 +6,7 @@ import com.dhk.expensetrackerapi.controller.dto.response.ExpenseResponse;
 import com.dhk.expensetrackerapi.service.ExpenseService;
 import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
+import com.dhk.expensetrackerapi.service.dto.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,15 +25,15 @@ public class ExpenseController {
     private static final String REDIRECT_URL = "/api/v1/expenses/";
 
     @GetMapping
-    public Page<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
-        return expenseService.getAllExpenses(pageable);
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> getAllExpenses(Pageable pageable) {
+        return ResponseEntity.ok(expenseService.getAllExpenses(pageable));
     }
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<ExpenseResponse> getExpense(@PathVariable Long expenseId) {
+    public ResponseEntity<ExpenseResponseDto> getExpense(@PathVariable Long expenseId) {
         ExpenseResponseDto responseDto = expenseService.getExpense(expenseId);
 
-        return ResponseEntity.ok(ExpenseAssembler.toExpenseResponse(responseDto));
+        return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping
@@ -54,6 +55,18 @@ public class ExpenseController {
         expenseService.updateExpense(expenseId, expenseRequestDto);
 
         return ResponseEntity.ok(expenseId);
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByCategory(@RequestParam String category, Pageable pageable) {
+
+        return ResponseEntity.ok(expenseService.getAllExpensesByCategory(category, pageable));
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByName(@RequestParam String name, Pageable pageable) {
+
+        return ResponseEntity.ok(expenseService.getAllExpensesByName(name, pageable));
     }
 }
 

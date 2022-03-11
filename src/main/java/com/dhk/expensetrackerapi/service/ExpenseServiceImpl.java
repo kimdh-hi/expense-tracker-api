@@ -6,6 +6,7 @@ import com.dhk.expensetrackerapi.repository.ExpenseRepository;
 import com.dhk.expensetrackerapi.service.dto.ExpenseDtoAssembler;
 import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
+import com.dhk.expensetrackerapi.service.dto.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,24 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     @Override
-    public Page<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
-        return expenseRepository.findAllExpense(pageable);
+    public PageResponseDto<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
+        Page<Expense> expensePage = expenseRepository.findAll(pageable);
+
+        return ExpenseDtoAssembler.toPageResponseDto(expensePage);
+    }
+
+    @Override
+    public PageResponseDto<ExpenseResponseDto> getAllExpensesByCategory(String category, Pageable pageable) {
+        Page<Expense> expensePage = expenseRepository.findByCategory(category, pageable);
+
+        return ExpenseDtoAssembler.toPageResponseDto(expensePage);
+    }
+
+    @Override
+    public PageResponseDto<ExpenseResponseDto> getAllExpensesByName(String name, Pageable pageable) {
+        Page<Expense> expensePage = expenseRepository.findByNameContaining(name, pageable);
+
+        return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
