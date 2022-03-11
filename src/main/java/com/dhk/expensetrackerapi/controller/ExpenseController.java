@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RequestMapping(value = "/expenses")
@@ -35,7 +36,7 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> saveExpense(@RequestBody ExpenseRequest request) {
+    public ResponseEntity<Long> saveExpense(@Valid @RequestBody ExpenseRequest request) {
         ExpenseRequestDto expenseRequestDto = ExpenseAssembler.toExpenseRequestDto(request);
         Long id = expenseService.saveExpense(expenseRequestDto);
 
