@@ -2,19 +2,19 @@ package com.dhk.expensetrackerapi.controller;
 
 import com.dhk.expensetrackerapi.controller.dto.ExpenseAssembler;
 import com.dhk.expensetrackerapi.controller.dto.request.ExpenseRequest;
-import com.dhk.expensetrackerapi.controller.dto.response.ExpenseResponse;
 import com.dhk.expensetrackerapi.service.ExpenseService;
 import com.dhk.expensetrackerapi.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.service.dto.response.ExpenseResponseDto;
 import com.dhk.expensetrackerapi.service.dto.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 
 @RequestMapping(value = "/expenses")
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class ExpenseController {
 
     @GetMapping
     public ResponseEntity<PageResponseDto<ExpenseResponseDto>> getAllExpenses(Pageable pageable) {
-        return ResponseEntity.ok(expenseService.getAllExpenses(pageable));
+        return ResponseEntity.ok(expenseService.getExpenses(pageable));
     }
 
     @GetMapping("/{expenseId}")
@@ -60,13 +60,21 @@ public class ExpenseController {
     @GetMapping("/category")
     public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByCategory(@RequestParam String category, Pageable pageable) {
 
-        return ResponseEntity.ok(expenseService.getAllExpensesByCategory(category, pageable));
+        return ResponseEntity.ok(expenseService.getExpensesByCategory(category, pageable));
     }
 
     @GetMapping("/name")
     public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByName(@RequestParam String name, Pageable pageable) {
 
-        return ResponseEntity.ok(expenseService.getAllExpensesByName(name, pageable));
+        return ResponseEntity.ok(expenseService.getExpensesByName(name, pageable));
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByDate(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate start,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate end, Pageable pageable) {
+
+        return ResponseEntity.ok(expenseService.getExpensesByDate(start, end, pageable));
     }
 }
 

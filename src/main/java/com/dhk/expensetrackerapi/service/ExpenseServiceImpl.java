@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Transactional(readOnly = true)
@@ -23,22 +24,33 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getAllExpenses(Pageable pageable) {
+    public PageResponseDto<ExpenseResponseDto> getExpenses(Pageable pageable) {
         Page<Expense> expensePage = expenseRepository.findAll(pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getAllExpensesByCategory(String category, Pageable pageable) {
+    public PageResponseDto<ExpenseResponseDto> getExpensesByCategory(String category, Pageable pageable) {
         Page<Expense> expensePage = expenseRepository.findByCategory(category, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getAllExpensesByName(String name, Pageable pageable) {
+    public PageResponseDto<ExpenseResponseDto> getExpensesByName(String name, Pageable pageable) {
         Page<Expense> expensePage = expenseRepository.findByNameContaining(name, pageable);
+
+        return ExpenseDtoAssembler.toPageResponseDto(expensePage);
+    }
+
+    @Override
+    public PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("시작날짜가 끝날짜보다 늦을 수 없습니다. 시작날짜: "+startDate.toString() + " 끝날짜: " + endDate.toString());
+        }
+
+        Page<Expense> expensePage = expenseRepository.findByDateBetween(startDate, endDate, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
