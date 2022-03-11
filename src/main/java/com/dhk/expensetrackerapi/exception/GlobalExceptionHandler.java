@@ -61,7 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         List<String> errors = ex.getBindingResult().getFieldErrors()
                 .stream()
-                .map(e -> e.getDefaultMessage())
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
                 .collect(Collectors.toList());
         body.put("messages", errors);
 
