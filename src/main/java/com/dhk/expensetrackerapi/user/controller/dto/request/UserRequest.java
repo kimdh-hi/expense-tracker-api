@@ -23,6 +23,6 @@ public class UserRequest {
     @NotBlank(message = "User password must not be empty.")
     private String password;
     @NotNull(message = "User age must not be null")
-    private long age;
+    private int age;
 
 }

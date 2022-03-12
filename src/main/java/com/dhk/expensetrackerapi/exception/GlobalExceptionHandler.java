@@ -1,6 +1,7 @@
 package com.dhk.expensetrackerapi.exception;
 
 import com.dhk.expensetrackerapi.exception.entity.ErrorObject;
+import com.dhk.expensetrackerapi.exception.exceptions.ItemAlreadyExistsException;
 import com.dhk.expensetrackerapi.exception.exceptions.ResourceNotFoundException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -23,17 +24,24 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleExpenseNotFountException(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorObject> handleExpenseNotFountException(ResourceNotFoundException ex) {
         ErrorObject errorObject = generateErrorObject(ex, HttpStatus.NOT_FOUND.value());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         ErrorObject errorObject = generateErrorObject(ex, HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ItemAlreadyExistsException.class)
+    public ResponseEntity<ErrorObject> handleItemAlreadyExistsException(ItemAlreadyExistsException ex) {
+        ErrorObject errorObject = generateErrorObject(ex, HttpStatus.CONTINUE.value());
+
+        return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

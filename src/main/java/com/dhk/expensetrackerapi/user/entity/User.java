@@ -23,12 +23,19 @@ public class User extends Timestamp {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private long age;
+    private int age;
 
-    public User(String name, String email, String password, long age) {
+    public User(String name, String email, String password, int age) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.age = age;
+    }
+
+    public void update(User newUser) {
+        this.name = newUser.getName();
+        this.email = newUser.getEmail();
+        this.age = newUser.getAge();
+        this.password = newUser.getPassword();
     }
 }
