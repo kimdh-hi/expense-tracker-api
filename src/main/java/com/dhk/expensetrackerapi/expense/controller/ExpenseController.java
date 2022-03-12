@@ -44,8 +44,8 @@ public class ExpenseController {
         return ResponseEntity.created(URI.create(REDIRECT_URL + id)).build();
     }
 
-    @DeleteMapping
-    public void deleteExpense(@RequestParam Long expenseId) {
+    @DeleteMapping("/{expenseId}")
+    public void deleteExpense(@PathVariable Long expenseId) {
         expenseService.deleteExpense(expenseId);
     }
 

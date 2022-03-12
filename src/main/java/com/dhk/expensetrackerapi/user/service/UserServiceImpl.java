@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -22,9 +24,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Long createUser(UserRequestDto userRequestDto) {
-        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
-            throw new ItemAlreadyExistsException("already exists email. email: " + userRequestDto.getEmail());
-        }
+        emailDuplicateValidate(userRequestDto.getEmail());
 
         User user = UserDtoAssembler.toUserEntity(userRequestDto);
         User savedUser = userRepository.save(user);
@@ -41,11 +41,25 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserResponseDto updateUser(Long userId, UserRequestDto userRequestDto) {
+        emailDuplicateValidate(userRequestDto.getEmail());
+
         User user = findUserById(userId);
-        User newUser = UserDtoAssembler.toUserEntity(userRequestDto);
+        User newUser = new User(
+                Objects.isNull(userRequestDto.getName()) ? user.getName() : userRequestDto.getName(),
+                Objects.isNull(userRequestDto.getEmail()) ? user.getEmail() : userRequestDto.getEmail(),
+                Objects.isNull(userRequestDto.getPassword()) ? user.getPassword() : userRequestDto.getPassword(),
+                Objects.isNull(userRequestDto.getAge()) ? user.getAge() : userRequestDto.getAge()
+        );
         user.update(newUser);
 
         return UserDtoAssembler.toUserResponseDto(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(Long userId) {
+        findUserById(userId);
+        userRepository.deleteById(userId);
     }
 
     private User findUserById(Long userId) {
@@ -54,5 +68,11 @@ public class UserServiceImpl implements UserService {
                     throw new ResourceNotFoundException("User is not found. id=" + userId);
                 }
         );
+    }
+
+    private void emailDuplicateValidate(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ItemAlreadyExistsException("already exists email. email: " + email);
+        }
     }
 }
