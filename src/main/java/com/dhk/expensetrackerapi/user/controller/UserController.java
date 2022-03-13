@@ -11,22 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<Long> createUser(@Valid @RequestBody UserRequest userRequest) {
-        UserRequestDto userRequestDto = UserAssembler.toUserRequestDto(userRequest);
-        Long userId = userService.createUser(userRequestDto);
-
-        return new ResponseEntity<>(userId, HttpStatus.CREATED);
-    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> readUser(@PathVariable Long userId) {

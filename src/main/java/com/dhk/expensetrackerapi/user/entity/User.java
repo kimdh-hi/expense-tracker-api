@@ -4,6 +4,7 @@ import com.dhk.expensetrackerapi.common.entity.Timestamp;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -20,6 +21,7 @@ public class User extends Timestamp {
     private String name;
     @Column(unique = true)
     private String email;
+    @Setter
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)

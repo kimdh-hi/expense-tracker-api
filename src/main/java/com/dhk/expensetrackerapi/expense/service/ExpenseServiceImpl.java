@@ -47,7 +47,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("시작날짜가 끝날짜보다 늦을 수 없습니다. 시작날짜: "+startDate.toString() + " 끝날짜: " + endDate.toString());
+            throw new IllegalArgumentException("시작날짜가 끝날짜보다 늦을 수 없습니다. 시작날짜: "+startDate + " 끝날짜: " + endDate);
         }
 
         Page<Expense> expensePage = expenseRepository.findByDateBetween(startDate, endDate, pageable);
@@ -59,7 +59,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseResponseDto getExpense(Long id) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense is not found. id=" + id);
+                    throw new ResourceNotFoundException("Expense", id);
                 }
         );
 
@@ -78,9 +78,9 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Transactional
     @Override
     public void deleteExpense(Long id) {
-        Expense expense = expenseRepository.findById(id).orElseThrow(
+       expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense is not found. id=" + id);
+                    throw new ResourceNotFoundException("Expense", id);
                 }
         );
 
@@ -92,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense is not found. id=" + id);
+                    throw new ResourceNotFoundException("Expense", id);
                 });
 
         Expense newExpense = new Expense(
