@@ -3,6 +3,8 @@ package com.dhk.expensetrackerapi.exception;
 import com.dhk.expensetrackerapi.exception.entity.ErrorObject;
 import com.dhk.expensetrackerapi.exception.exceptions.ItemAlreadyExistsException;
 import com.dhk.expensetrackerapi.exception.exceptions.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorObject> handleExpenseNotFountException(ResourceNotFoundException ex) {
@@ -56,6 +60,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorObject.setMessage(ex.getMessage());
         errorObject.setStatusCode(statusCode);
         errorObject.setTimestamp(LocalDateTime.now());
+
+        LOG.error("[error] statusCode={}, class={}, message={}", statusCode, ex.getClass().getName(), ex.getMessage());
 
         return errorObject;
     }
