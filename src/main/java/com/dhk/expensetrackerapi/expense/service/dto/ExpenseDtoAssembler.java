@@ -4,6 +4,7 @@ import com.dhk.expensetrackerapi.expense.entity.Expense;
 import com.dhk.expensetrackerapi.expense.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.ExpenseResponseDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.PageResponseDto;
+import com.dhk.expensetrackerapi.user.entity.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -13,13 +14,14 @@ public class ExpenseDtoAssembler {
 
     private ExpenseDtoAssembler() {}
 
-    public static Expense toExpenseEntity(ExpenseRequestDto dto) {
+    public static Expense toExpenseEntity(ExpenseRequestDto dto, User user) {
         return new Expense(
                 dto.getName(),
                 dto.getDescription(),
                 dto.getAmount(),
                 dto.getCategory(),
-                dto.getDate()
+                dto.getDate(),
+                user
         );
     }
 

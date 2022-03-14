@@ -6,10 +6,13 @@ import com.dhk.expensetrackerapi.expense.service.ExpenseService;
 import com.dhk.expensetrackerapi.expense.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.ExpenseResponseDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.PageResponseDto;
+import com.dhk.expensetrackerapi.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,8 +28,10 @@ public class ExpenseController {
     private static final String REDIRECT_URL = "/api/v1/expenses/";
 
     @GetMapping
-    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> getAllExpenses(Pageable pageable) {
-        return ResponseEntity.ok(expenseService.getExpenses(pageable));
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> getAllExpenses(
+            @AuthenticationPrincipal CustomUserDetails userDetails, Pageable pageable) {
+
+        return ResponseEntity.ok(expenseService.getExpenses(userDetails.getUser(), pageable));
     }
 
     @GetMapping("/{expenseId}")
@@ -37,9 +42,11 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> saveExpense(@Valid @RequestBody ExpenseRequest request) {
+    public ResponseEntity<Long> saveExpense(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody ExpenseRequest request) {
         ExpenseRequestDto expenseRequestDto = ExpenseAssembler.toExpenseRequestDto(request);
-        Long id = expenseService.saveExpense(expenseRequestDto);
+        Long id = expenseService.saveExpense(expenseRequestDto, userDetails.getUser());
 
         return ResponseEntity.created(URI.create(REDIRECT_URL + id)).build();
     }
@@ -50,9 +57,11 @@ public class ExpenseController {
     }
 
     @PutMapping("/{expenseId}")
-    public ResponseEntity<Long> updateExpenseV2(@PathVariable Long expenseId, @RequestBody ExpenseRequest request) {
+    public ResponseEntity<Long> updateExpense(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long expenseId, @RequestBody ExpenseRequest request) {
         ExpenseRequestDto expenseRequestDto = ExpenseAssembler.toExpenseRequestDto(request);
-        expenseService.updateExpense(expenseId, expenseRequestDto);
+        expenseService.updateExpense(expenseId, expenseRequestDto, userDetails.getUser());
 
         return ResponseEntity.ok(expenseId);
     }

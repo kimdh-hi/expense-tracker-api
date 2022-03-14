@@ -7,6 +7,7 @@ import com.dhk.expensetrackerapi.expense.service.dto.ExpenseDtoAssembler;
 import com.dhk.expensetrackerapi.expense.service.dto.request.ExpenseRequestDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.ExpenseResponseDto;
 import com.dhk.expensetrackerapi.expense.service.dto.response.PageResponseDto;
+import com.dhk.expensetrackerapi.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getExpenses(Pageable pageable) {
-        Page<Expense> expensePage = expenseRepository.findAll(pageable);
+    public PageResponseDto<ExpenseResponseDto> getExpenses(User user, Pageable pageable) {
+        Page<Expense> expensePage = expenseRepository.findAllByUser(user, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
@@ -68,8 +69,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Transactional
     @Override
-    public Long saveExpense(ExpenseRequestDto expenseRequestDto) {
-        Expense expense = ExpenseDtoAssembler.toExpenseEntity(expenseRequestDto);
+    public Long saveExpense(ExpenseRequestDto expenseRequestDto, User user) {
+        Expense expense = ExpenseDtoAssembler.toExpenseEntity(expenseRequestDto, user);
         Expense savedExpense = expenseRepository.save(expense);
 
         return savedExpense.getId();
@@ -89,7 +90,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Transactional
     @Override
-    public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto) {
+    public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto, User user) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
                     throw new ResourceNotFoundException("Expense", id);
@@ -100,7 +101,8 @@ public class ExpenseServiceImpl implements ExpenseService {
                 Objects.isNull(expenseRequestDto.getDescription()) ? expense.getDescription() : expenseRequestDto.getDescription(),
                 Objects.isNull(expenseRequestDto.getAmount()) ? expense.getAmount() : expenseRequestDto.getAmount(),
                 Objects.isNull(expenseRequestDto.getCategory()) ? expense.getCategory() : expenseRequestDto.getCategory(),
-                Objects.isNull(expenseRequestDto.getDate()) ? expense.getDate() : expenseRequestDto.getDate()
+                Objects.isNull(expenseRequestDto.getDate()) ? expense.getDate() : expenseRequestDto.getDate(),
+                user
         );
 
         expense.update(newExpense);

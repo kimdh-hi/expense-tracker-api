@@ -35,11 +35,6 @@ public class AuthTest {
 
     @Test
     void unauthorizedTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-        given(expenseService.getExpenses(pageable)).willReturn(
-                        new PageResponseDto<ExpenseResponseDto>(
-                                List.of(new ExpenseResponseDto(1L, "name", "description", 1000, "category", LocalDate.now(), LocalDateTime.now(), LocalDateTime.now()))
-                                , true, 0, 10, 1, 1));
 
         mockMvc.perform(get("/expenses"))
                 .andExpect(status().is4xxClientError())

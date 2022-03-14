@@ -1,6 +1,8 @@
 package com.dhk.expensetrackerapi.expense.entity;
 
 import com.dhk.expensetrackerapi.common.entity.Timestamp;
+import com.dhk.expensetrackerapi.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,12 +35,19 @@ public class Expense extends Timestamp {
     @Column(nullable = false)
     private LocalDate date;
 
-    public Expense(String name, String description, int amount, String category, LocalDate date) {
+    @JsonIgnore
+    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+    private User user;
+
+    public Expense(String name, String description, int amount, String category, LocalDate date, User user) {
         this.name = name;
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
+
+        this.user = user;
     }
 
     public void update(Expense newExpense) {
