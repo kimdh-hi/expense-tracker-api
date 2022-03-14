@@ -32,35 +32,35 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getExpensesByCategory(String category, Pageable pageable) {
-        Page<Expense> expensePage = expenseRepository.findByCategory(category, pageable);
+    public PageResponseDto<ExpenseResponseDto> getExpensesByCategory(String category, Pageable pageable, User user) {
+        Page<Expense> expensePage = expenseRepository.findByUserAndCategory(user, category, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getExpensesByName(String name, Pageable pageable) {
-        Page<Expense> expensePage = expenseRepository.findByNameContaining(name, pageable);
+    public PageResponseDto<ExpenseResponseDto> getExpensesByName(String name, Pageable pageable, User user) {
+        Page<Expense> expensePage = expenseRepository.findByUserAndNameContaining(user, name, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
-    public PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable, User user) {
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작날짜가 끝날짜보다 늦을 수 없습니다. 시작날짜: "+startDate + " 끝날짜: " + endDate);
         }
 
-        Page<Expense> expensePage = expenseRepository.findByDateBetween(startDate, endDate, pageable);
+        Page<Expense> expensePage = expenseRepository.findByUserAndDateBetween(user, startDate, endDate, pageable);
 
         return ExpenseDtoAssembler.toPageResponseDto(expensePage);
     }
 
     @Override
-    public ExpenseResponseDto getExpense(Long id) {
-        Expense expense = expenseRepository.findById(id).orElseThrow(
+    public ExpenseResponseDto getExpense(Long id, User user) {
+        Expense expense = expenseRepository.findByUserAndId(user, id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense", id);
+                    throw new ResourceNotFoundException("Expense is not found. expenseId: " + id);
                 }
         );
 
@@ -78,10 +78,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Transactional
     @Override
-    public void deleteExpense(Long id) {
-       expenseRepository.findById(id).orElseThrow(
+    public void deleteExpense(Long id, User user) {
+       expenseRepository.findByUserAndId(user, id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense", id);
+                    throw new ResourceNotFoundException("Expense is not found. expenseId: " + id);
                 }
         );
 
@@ -93,7 +93,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void updateExpense(Long id, ExpenseRequestDto expenseRequestDto, User user) {
         Expense expense = expenseRepository.findById(id).orElseThrow(
                 () -> {
-                    throw new ResourceNotFoundException("Expense", id);
+                    throw new ResourceNotFoundException("Expense is not found. expenseId: " + id);
                 });
 
         Expense newExpense = new Expense(

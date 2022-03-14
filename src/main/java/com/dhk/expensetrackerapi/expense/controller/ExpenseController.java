@@ -35,8 +35,10 @@ public class ExpenseController {
     }
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<ExpenseResponseDto> getExpense(@PathVariable Long expenseId) {
-        ExpenseResponseDto responseDto = expenseService.getExpense(expenseId);
+    public ResponseEntity<ExpenseResponseDto> getExpense(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long expenseId) {
+        ExpenseResponseDto responseDto = expenseService.getExpense(expenseId, userDetails.getUser());
 
         return ResponseEntity.ok(responseDto);
     }
@@ -52,8 +54,11 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{expenseId}")
-    public void deleteExpense(@PathVariable Long expenseId) {
-        expenseService.deleteExpense(expenseId);
+    public void deleteExpense(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long expenseId) {
+
+        expenseService.deleteExpense(expenseId, userDetails.getUser());
     }
 
     @PutMapping("/{expenseId}")
@@ -67,23 +72,28 @@ public class ExpenseController {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByCategory(@RequestParam String category, Pageable pageable) {
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByCategory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam String category, Pageable pageable) {
 
-        return ResponseEntity.ok(expenseService.getExpensesByCategory(category, pageable));
+        return ResponseEntity.ok(expenseService.getExpensesByCategory(category, pageable, userDetails.getUser()));
     }
 
     @GetMapping("/name")
-    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByName(@RequestParam String name, Pageable pageable) {
+    public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByName(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam String name, Pageable pageable) {
 
-        return ResponseEntity.ok(expenseService.getExpensesByName(name, pageable));
+        return ResponseEntity.ok(expenseService.getExpensesByName(name, pageable, userDetails.getUser()));
     }
 
     @GetMapping("/date")
     public ResponseEntity<PageResponseDto<ExpenseResponseDto>> findAllExpensesByDate(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate start,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate end, Pageable pageable) {
 
-        return ResponseEntity.ok(expenseService.getExpensesByDate(start, end, pageable));
+        return ResponseEntity.ok(expenseService.getExpensesByDate(start, end, pageable, userDetails.getUser()));
     }
 }
 

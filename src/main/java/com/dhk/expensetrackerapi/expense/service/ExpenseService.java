@@ -12,17 +12,17 @@ public interface ExpenseService {
 
     PageResponseDto<ExpenseResponseDto> getExpenses(User user, Pageable pageable);
 
-    PageResponseDto<ExpenseResponseDto> getExpensesByCategory(String category, Pageable pageable);
+    PageResponseDto<ExpenseResponseDto> getExpensesByCategory(String category, Pageable pageable, User user);
 
-    PageResponseDto<ExpenseResponseDto> getExpensesByName(String name, Pageable pageable);
+    PageResponseDto<ExpenseResponseDto> getExpensesByName(String name, Pageable pageable, User user);
 
-    PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    PageResponseDto<ExpenseResponseDto> getExpensesByDate(LocalDate startDate, LocalDate endDate, Pageable pageable, User user);
 
-    ExpenseResponseDto getExpense(Long id);
+    ExpenseResponseDto getExpense(Long id, User user);
 
     Long saveExpense(ExpenseRequestDto expenseRequestDto, User user);
 
-    void deleteExpense(Long id);
+    void deleteExpense(Long id, User user);
 
     void updateExpense(Long id, ExpenseRequestDto expenseRequestDto, User user);
 }

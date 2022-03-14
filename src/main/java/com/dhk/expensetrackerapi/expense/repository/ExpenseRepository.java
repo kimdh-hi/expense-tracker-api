@@ -7,14 +7,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     Page<Expense> findAllByUser(User user, Pageable pageable);
-    Page<Expense> findByCategory(String category, Pageable pageable);
-    Page<Expense> findByNameContaining(String name, Pageable pageable);
-    Page<Expense> findByDateBetween(LocalDate start, LocalDate end, Pageable pageable);
+    Page<Expense> findByUserAndCategory(User user, String category, Pageable pageable);
+    Page<Expense> findByUserAndNameContaining(User user, String name, Pageable pageable);
+    Page<Expense> findByUserAndDateBetween(User user, LocalDate start, LocalDate end, Pageable pageable);
 
+    Optional<Expense> findByUserAndId(User user, Long id);
 
 
 //    @Query("select new com.dhk.expensetrackerapi.expense.service.dto.response.ExpenseResponseDto(e.id, e.name, e.description, e.amount, e.category, e.date, e.createdAt, e.updatedAt) from Expense e ")
