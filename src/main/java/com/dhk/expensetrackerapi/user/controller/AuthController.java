@@ -1,5 +1,6 @@
 package com.dhk.expensetrackerapi.user.controller;
 
+import com.dhk.expensetrackerapi.security.jwt.TokenResponse;
 import com.dhk.expensetrackerapi.user.controller.dto.request.LoginRequest;
 import com.dhk.expensetrackerapi.user.controller.dto.UserAssembler;
 import com.dhk.expensetrackerapi.user.controller.dto.request.UserRequest;
@@ -22,11 +23,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<HttpStatus> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
         LoginRequestDto loginRequestDto = UserAssembler.toLoginRequestDto(loginRequest);
-        authService.login(loginRequestDto);
+        TokenResponse tokenResponse = authService.login(loginRequestDto);
 
-        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/register")

@@ -1,6 +1,10 @@
 package com.dhk.expensetrackerapi.user.service;
 
 import com.dhk.expensetrackerapi.exception.exceptions.ItemAlreadyExistsException;
+import com.dhk.expensetrackerapi.security.CustomUserDetails;
+import com.dhk.expensetrackerapi.security.CustomUserDetailsService;
+import com.dhk.expensetrackerapi.security.jwt.JwtTokenProvider;
+import com.dhk.expensetrackerapi.security.jwt.TokenResponse;
 import com.dhk.expensetrackerapi.user.entity.User;
 import com.dhk.expensetrackerapi.user.repository.UserRepository;
 import com.dhk.expensetrackerapi.user.service.dto.UserDtoAssembler;
@@ -8,9 +12,9 @@ import com.dhk.expensetrackerapi.user.service.dto.request.LoginRequestDto;
 import com.dhk.expensetrackerapi.user.service.dto.request.UserRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService userDetailsService;
 
     @Transactional
     @Override
@@ -35,10 +41,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void login(LoginRequestDto loginRequestDto) {
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
+    public TokenResponse login(LoginRequestDto loginRequestDto) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
+        } catch (DisabledException ex) {
+            throw new Exception("User disabled");
+        } catch (BadCredentialsException ex) {
+            throw new Exception("Bad credential");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
+        String token = jwtTokenProvider.generateToken(userDetails);
+
+        return new TokenResponse(token);
     }
 
     private void emailDuplicateValidate(String email) {
